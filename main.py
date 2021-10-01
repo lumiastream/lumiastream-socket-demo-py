@@ -1,26 +1,17 @@
-import socketio
+import asyncio
+from websocket import create_connection
 
 # Paste token from Lumia Stream (Settings > Advanced > Developers API > Show Token)
 token = 'paste-token-here'
 
-sio = socketio.Client()
+url = "ws://localhost:39231/api?token=" + token
+print(url)
+ws = create_connection(url)
 
+# Example of sending a command using a websocket
+ws.send('{ "type": "alert", "params": { "value": "twitch-follower" } }')
 
-@sio.event
-def connect():
-    print('connection established')
-
-
-@sio.event
-def event(data):
-    print('Event', data)
-
-
-@sio.event
-def disconnect(reason):
-    print('disconnected from server ', reason)
-
-
-print('Starting socket client')
-sio.connect('http://localhost:39231?token=' + token)
-sio.wait()
+# Infinite loop waiting for WebSocket data
+while True:
+    msg = ws.recv()
+    print(msg)
